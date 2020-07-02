@@ -21,19 +21,31 @@ const ButtonsContainer = styled.div`
   flex-wrap: wrap;
   margin-top: 8px;
 
-  &:not(:hover) {
-    opacity: 0.3;
-  }
-
   & > *:last-child {
     margin-right: 0;
   }
 `;
 
-const ExpenseBudgetItem = ({ isLoading, isInverted, showAmountSign, collective, expense, showProcessActions }) => {
+const ExpenseContainer = styled.div`
+  padding: 16px 27px;
+
+  &:not(:hover):not(:focus-within) ${ButtonsContainer} {
+    opacity: 0.24;
+  }
+`;
+
+const ExpenseBudgetItem = ({
+  isLoading,
+  host,
+  isInverted,
+  showAmountSign,
+  collective,
+  expense,
+  showProcessActions,
+}) => {
   const featuredProfile = isInverted ? collective : expense?.payee;
   return (
-    <Box p="16px 27px">
+    <ExpenseContainer>
       <Flex justifyContent="space-between" flexWrap="wrap">
         <Flex flex="1" minWidth="max(60%, 300px)" maxWidth={[null, '70%']}>
           <Box mr={3}>
@@ -49,7 +61,7 @@ const ExpenseBudgetItem = ({ isLoading, isInverted, showAmountSign, collective, 
             <LoadingPlaceholder height={60} />
           ) : (
             <Box>
-              <LinkExpense collective={collective} expense={expense} data-cy="expense-link">
+              <LinkExpense collective={expense.account || collective} expense={expense} data-cy="expense-link">
                 <AutosizeText
                   value={expense.description}
                   maxLength={255}
@@ -110,7 +122,8 @@ const ExpenseBudgetItem = ({ isLoading, isInverted, showAmountSign, collective, 
         {showProcessActions && expense?.permissions && (
           <ButtonsContainer>
             <ProcessExpenseButtons
-              collective={collective}
+              host={host}
+              collective={expense.account || collective}
               expense={expense}
               permissions={expense.permissions}
               buttonProps={{ ...DEFAULT_PROCESS_EXPENSE_BTN_PROPS, mx: 1, py: 2 }}
@@ -118,7 +131,7 @@ const ExpenseBudgetItem = ({ isLoading, isInverted, showAmountSign, collective, 
           </ButtonsContainer>
         )}
       </Flex>
-    </Box>
+    </ExpenseContainer>
   );
 };
 
@@ -130,10 +143,11 @@ ExpenseBudgetItem.propTypes = {
   showProcessActions: PropTypes.bool,
   collective: PropTypes.shape({
     slug: PropTypes.string.isRequired,
-    parentCollective: PropTypes.shape({
+    parent: PropTypes.shape({
       slug: PropTypes.string.isRequired,
     }),
   }),
+  host: PropTypes.object,
   expense: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     legacyId: PropTypes.number,
@@ -154,6 +168,10 @@ ExpenseBudgetItem.propTypes = {
     createdByAccount: PropTypes.shape({
       type: PropTypes.string.isRequired,
       slug: PropTypes.string.isRequired,
+    }),
+    /** If available, this `account` will be used to link expense in place of the `collective` */
+    account: PropTypes.shape({
+      slug: PropTypes.string,
     }),
   }),
 };

@@ -155,6 +155,14 @@ export const expensePageExpenseFieldsFragment = gqlV2`
           ...HostFieldsFragment
         }
       }
+      ... on Fund {
+        id
+        isApproved
+        balance
+        host {
+          ...HostFieldsFragment
+        }
+      }
       ... on Event {
         id
         isApproved
@@ -162,7 +170,22 @@ export const expensePageExpenseFieldsFragment = gqlV2`
         host {
           ...HostFieldsFragment
         }
-        parentCollective {
+        parent {
+          id
+          slug
+          name
+          type
+          imageUrl
+        }
+      }
+       ... on Project {
+        id
+        isApproved
+        balance
+        host {
+          ...HostFieldsFragment
+        }
+        parent {
           id
           slug
           name
@@ -208,4 +231,41 @@ export const expensePageExpenseFieldsFragment = gqlV2`
 
   ${CommentFieldsFragment}
   ${HostFieldsFragment}
+`;
+
+export const expensesListFieldsFragment = gqlV2/* GraphQL */ `
+  fragment ExpensesListFieldsFragment on Expense {
+    id
+    legacyId
+    description
+    status
+    createdAt
+    tags
+    amount
+    currency
+    type
+    permissions {
+      canDelete
+      canApprove
+      canUnapprove
+      canReject
+      canPay
+      canMarkAsUnpaid
+    }
+    payoutMethod {
+      id
+      type
+    }
+    payee {
+      id
+      type
+      slug
+      imageUrl(height: 80)
+    }
+    createdByAccount {
+      id
+      type
+      slug
+    }
+  }
 `;

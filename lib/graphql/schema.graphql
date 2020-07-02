@@ -2274,7 +2274,6 @@ type Order implements Transaction {
   updatedAt: DateString
   paymentMethod: PaymentMethodType
   description: String
-  privateMessage: String
   publicMessage: String
   order: OrderType
   subscription: Subscription
@@ -2325,6 +2324,7 @@ input OrderInputType {
   hostFeePercent: Int
   platformFeePercent: Int
   platformFee: Int
+  isFeesOnTop: Boolean
   currency: String
   interval: String
   description: String
